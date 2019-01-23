@@ -1,0 +1,7 @@
+[package]
+name = "cloudevents"
+version = "0.1.0"
+authors = ["Kim Christensen <KMCH@simcorp.com>"]
+edition = "2018"
+
+[dependencies]
