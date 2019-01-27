@@ -1,6 +1,6 @@
 # CloudEvents
 
-[![Travis Build Status](https://travis-ci.org/kichristensen/rust-cloudevents.svg?branch=master)](https://travis-ci.org/kichristensen/rust-cloudevents) [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/rd9qhbrf2sxkq3po/branch/master?svg=true)](https://ci.appveyor.com/project/Xharze/rust-cloudevents/branch/master)
+[![Travis Build Status](https://travis-ci.org/kichristensen/rust-cloudevents.svg?branch=master)](https://travis-ci.org/kichristensen/rust-cloudevents) [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/rd9qhbrf2sxkq3po/branch/master?svg=true)](https://ci.appveyor.com/project/Xharze/rust-cloudevents/branch/master) [![Rust Docs](https://docs.rs/cloudevents/badge.svg)](https://docs.rs/cloudevents) [![Crate](https://img.shields.io/badge/crates.io-cloudevents-brightgreen.svg)](https://crates.io/crates/cloudevents)
 
 Implementation of the core [v0.2 CloudEvents specification](https://github.com/cloudevents/spec/blob/v0.2/spec.md) and [v0.2 JSON Event Format](https://github.com/cloudevents/spec/blob/v0.2/json-format.md).
 
