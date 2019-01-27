@@ -1,23 +1,4 @@
-[package]
-name = "cloudevents"
-version = "0.1.0"
-authors = ["Kim Christensen <kimworking@gmail.com>"]
-description = "Implementation of the CloudEvents specification"
-license = "MIT/Apache-2.0"
-edition = "2018"
-readme = "README.md"
-keywords = ["cloudevents"]
-repository = "https://github.com/kichristensen/rust-cloudevents"
-
-[dependencies]
-serde_json = "1.0.37"
-serde = "1.0.85"
-serde_derive = "1.0.85"
-chrono = { version = "0.4.6", features = ["serde"] }
-failure = "0.1.5"
-url = "1.7.2"
-base64 = "0.10.0"
-
-[features]
-default = ["v02"]
-v02 = []
+[workspace]
+members = [
+    "cloudevents",
+]
