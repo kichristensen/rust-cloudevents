@@ -1,5 +1,7 @@
 # CloudEvents
 
+[![Build Status](https://travis-ci.org/kichristensen/rust-cloudevents.svg?branch=master)](https://travis-ci.org/kichristensen/rust-cloudevents)
+
 Implementation of the core [v0.2 CloudEvents specification](https://github.com/cloudevents/spec/blob/v0.2/spec.md) and [v0.2 JSON Event Format](https://github.com/cloudevents/spec/blob/v0.2/json-format.md).
 
 This library is meant to provide the base for other CloudEvent transport bindings and formats. It only implements the core specification and the JSON format.
