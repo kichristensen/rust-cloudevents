@@ -7,7 +7,6 @@ license = "MIT/Apache-2.0"
 edition = "2018"
 readme = "README.md"
 keywords = ["cloudevents"]
-categories = ["cloudevents"]
 repository = "https://github.com/kichristensen/rust-cloudevents"
 
 [dependencies]
