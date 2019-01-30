@@ -1,6 +1,6 @@
 [package]
 name = "cloudevents"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Kim Christensen <kimworking@gmail.com>"]
 description = "Implementation of the CloudEvents specification"
 license = "MIT/Apache-2.0"

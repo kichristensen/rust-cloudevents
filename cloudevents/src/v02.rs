@@ -229,54 +229,51 @@ impl CloudEvent {
 ///
 /// [`CloudEvent`]: struct.CloudEvent.html
 #[derive(Debug)]
-pub struct CloudEventBuilder<S> {
-    event_type: Option<S>,
-    source: Option<S>,
-    id: Option<S>,
-    time: Option<S>,
-    schemaurl: Option<S>,
-    contenttype: Option<S>,
+pub struct CloudEventBuilder {
+    event_type: Option<String>,
+    source: Option<String>,
+    id: Option<String>,
+    time: Option<String>,
+    schemaurl: Option<String>,
+    contenttype: Option<String>,
     data: Option<Data>,
     extensions: Option<HashMap<String, ExtensionValue>>,
 }
 
-impl<S> CloudEventBuilder<S>
-where
-    S: Into<String>
-{
+impl CloudEventBuilder {
     /// Set the event type.
-    pub fn event_type(mut self, s: S) -> Self {
-        self.event_type = Some(s);
+    pub fn event_type<S: Into<String>>(mut self, s: S) -> Self {
+        self.event_type = Some(s.into());
         self
     }
 
     /// Set the source.
-    pub fn source(mut self, s: S) -> Self {
-        self.source = Some(s);
+    pub fn source<S: Into<String>>(mut self, s: S) -> Self {
+        self.source = Some(s.into());
         self
     }
 
     /// Set the event id.
-    pub fn event_id(mut self, s: S) -> Self {
-        self.id = Some(s);
+    pub fn event_id<S: Into<String>>(mut self, s: S) -> Self {
+        self.id = Some(s.into());
         self
     }
 
     /// Set the time.
-    pub fn time(mut self, s: S) -> Self {
-        self.time = Some(s);
+    pub fn time<S: Into<String>>(mut self, s: S) -> Self {
+        self.time = Some(s.into());
         self
     }
 
     /// Set the schemaurl.
-    pub fn schemaurl(mut self, s: S) -> Self {
-        self.schemaurl = Some(s);
+    pub fn schemaurl<S: Into<String>>(mut self, s: S) -> Self {
+        self.schemaurl = Some(s.into());
         self
     }
 
     /// Set the content type.
-    pub fn contenttype(mut self, s: S) -> Self {
-        self.contenttype = Some(s);
+    pub fn contenttype<S: Into<String>>(mut self, s: S) -> Self {
+        self.contenttype = Some(s.into());
         self
     }
 
@@ -302,10 +299,10 @@ where
     /// [`CloudEvent`]: struct.CloudEvent.html
     pub fn build(self) -> Result<CloudEvent, Error> {
         Ok(CloudEvent {
-            event_type: self.event_type.map(|x| x.into()).ok_or(format_err!("Event type is required"))?,
+            event_type: self.event_type.ok_or(format_err!("Event type is required"))?,
             source: {
                 if let Some(x) = self.source {
-                    let source = x.into();
+                    let source = x;
                     match Url::parse(&source) {
                         Ok(_) | Err(ParseError::RelativeUrlWithoutBase) => source,
                         Err(e) => return Err(format_err!("{}", e)),
@@ -314,20 +311,20 @@ where
                     return Err(format_err!("Source is required"));
                 }
             },
-            id: self.id.map(|x| x.into()).ok_or(format_err!("Event id is required"))?,
+            id: self.id.ok_or(format_err!("Event id is required"))?,
             time: {
                 if let Some(t) = self.time {
-                    Some(DateTime::parse_from_rfc3339(&t.into())?)
+                    Some(DateTime::parse_from_rfc3339(&t)?)
                 } else {
                     None
                 }
             },
-            contenttype: self.contenttype.map(|x| x.into()),
+            contenttype: self.contenttype,
             data: self.data,
             extensions: self.extensions,
             schemaurl: {
                 if let Some(x) = self.schemaurl {
-                    let schemaurl = x.into();
+                    let schemaurl = x;
                     match Url::parse(&schemaurl) {
                         Ok(_) | Err(ParseError::RelativeUrlWithoutBase) => Some(schemaurl),
                         Err(e) => return Err(format_err!("{}", e)),
@@ -341,10 +338,7 @@ where
     }
 }
 
-impl<S> Default for CloudEventBuilder<S>
-where
-    S: Into<String>,
-{
+impl Default for CloudEventBuilder {
     fn default() -> Self {
         CloudEventBuilder {
             event_type: None,
