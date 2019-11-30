@@ -1,5 +1,5 @@
 use base64;
-use chrono::prelude::{DateTime, FixedOffset};
+use chrono::prelude::{DateTime, FixedOffset, Local};
 use failure::{format_err, Error};
 use serde::ser::Serialize;
 use serde_derive::{Deserialize, Serialize};
@@ -230,15 +230,17 @@ impl CloudEvent {
 /// Create a new [`CloudEvent`].
 ///
 /// # Example
-/// use cloudevents::v10::CloudEvent;
-/// use std::error::Error;
+/// ```
+/// use cloudevents::v10::{CloudEvent,CloudEventBuilder};
+/// use failure::Error;
 ///
 /// let event : Result<CloudEvent, Error> = CloudEventBuilder::default()
 ///     .event_id("id")
 ///     .source("http://www.google.com")
 ///     .event_type("test type")
-///     .datacontenttype(Some("application/json")
+///     .datacontenttype("application/json")
 ///     .build();
+/// ```
 ///
 /// [`CloudEvent`]: struct.CloudEvent.html
 #[derive(Debug)]
@@ -335,10 +337,10 @@ impl CloudEventBuilder {
             },
             id: self.id.ok_or(format_err!("Event id is required"))?,
             time: {
-                if let Some(t) = self.time {
-                    Some(DateTime::parse_from_rfc3339(&t)?)
-                } else {
-                    None
+                match self.time.as_ref() {
+                    Some(t) if t == "now" => Some(DateTime::<FixedOffset>::from(Local::now())),
+                    Some(t) => Some(DateTime::parse_from_rfc3339(&t)?),
+                    None => None,
                 }
             },
             subject: self.subject,
@@ -385,20 +387,36 @@ impl Default for CloudEventBuilder {
 /// # Example
 ///
 /// ```
+/// #[macro_use]
 /// use cloudevents::cloudevent_v10;
-/// use std::error::Error;
-///
-/// fn main() -> Result<(), Box<Error>> {
-///     let cloudevent = cloudevent_v10!(
-///         event_type: "com.example.object.delete.v2",
-///         source: "https://github.com/cloudevents/spec/pull/123",
-///         event_id: "0e72b6bd-1341-46b5-9907-efde752682c4",
-///         datacontenttype: "application/json"
-///     )?;
-///     Ok(())
-/// }
-///
+/// use cloudevents::v10::Data;
+/// 
+/// let event = cloudevent_v10!(
+///   event_type: "test type",
+///   source: "http://www.google.com",
+///   event_id: "id",
+///   datacontenttype: "application/json",
+///   data: Data::from_string("\"test\""),
+/// ).unwrap();
 /// ```
+/// 
+/// ## Date now
+/// 
+/// ```
+/// #[macro_use]
+/// use cloudevents::cloudevent_v10;
+/// use cloudevents::v10::Data;
+/// 
+/// let event = cloudevent_v10!(
+///   event_type: "test type",
+///   source: "http://www.google.com",
+///   event_id: "id",
+///   datacontenttype: "application/json",
+///   time: "now",
+///   data: Data::from_string("\"test\""),
+/// ).unwrap();
+/// ```
+/// 
 /// [ `CloudEvent`]: struct.CloudEvent.html
 #[macro_export]
 macro_rules! cloudevent_v10 {
