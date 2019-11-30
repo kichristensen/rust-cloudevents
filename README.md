@@ -1,20 +1,50 @@
 # CloudEvents
 
-[![Travis Build Status](https://travis-ci.org/kichristensen/rust-cloudevents.svg?branch=master)](https://travis-ci.org/kichristensen/rust-cloudevents) [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/rd9qhbrf2sxkq3po/branch/master?svg=true)](https://ci.appveyor.com/project/Xharze/rust-cloudevents/branch/master) [![Rust Docs](https://docs.rs/cloudevents/badge.svg)](https://docs.rs/cloudevents) [![Crate](https://img.shields.io/badge/crates.io-cloudevents-brightgreen.svg)](https://crates.io/crates/cloudevents)
-
-Implementation of the core [v0.2 CloudEvents specification](https://github.com/cloudevents/spec/blob/v0.2/spec.md) and [v0.2 JSON Event Format](https://github.com/cloudevents/spec/blob/v0.2/json-format.md).
+Implementation of the core in version
+* v1.0: [v1.0 CloudEvents specification](https://github.com/cloudevents/spec/blob/v1.0/spec.md) and [v1.0 JSON Event Format](https://github.com/cloudevents/spec/blob/v1.0/json-format.md).
+* v0.2: [v0.2 CloudEvents specification](https://github.com/cloudevents/spec/blob/v0.2/spec.md) and [v0.2 JSON Event Format](https://github.com/cloudevents/spec/blob/v0.2/json-format.md).
 
 This library is meant to provide the base for other CloudEvent transport bindings and formats. It only implements the core specification and the JSON format.
 
-## Usage
+
+## Usage v1.0
 
 A cloud event can be create in two different ways:
 
 ```rust
-use cloudevents::{
-  cloudevent_v02,
-  v02::{CloudEventBuilder}
-};
+use cloudevents::v10::{CloudEventBuilder,Data};
+use std::error::Error;
+
+// Using the builder
+let event : Result<CloudEvent, Error> = CloudEventBuilder::default()
+  .event_id("id")
+  .source("http://www.google.com")
+  .event_type("test type")
+  .datacontenttype("application/json")
+  .build();
+
+// or using the macro
+let event : Result<CloudEvent, Error> = cloudevent!(
+    event_type: "test type",
+    source: "http://www.google.com",
+    event_id: "id",
+    datacontenttype: "application/json",
+    data: Data::from_string("\"test\""),
+)
+```
+
+To serialize the event as JSON, just use `serde_json`:
+
+```rust
+let json = serde_json::to_string(&event)?;
+```
+
+## Usage v0.2
+
+A cloud event can be create in two different ways:
+
+```rust
+use cloudevents::v02::{CloudEventBuilder,Data};
 use std::error::Error;
 
 // Using the builder
@@ -31,7 +61,7 @@ let event : Result<CloudEvent, Error> = cloudevent!(
     source: "http://www.google.com",
     event_id: "id",
     contenttype: "application/json",
-    data: Data::from_string("test"),
+    data: Data::from_string("\"test\""),
 )
 ```
 

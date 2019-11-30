@@ -27,7 +27,7 @@ impl ExtensionValue {
     /// # Example
     ///
     /// ```
-    /// use cloudevents::v02::ExtensionValue;
+    /// use cloudevents::v10::ExtensionValue;
     ///
     /// let value = ExtensionValue::from_string("value");
     /// assert_eq!(value, ExtensionValue::String("value".to_owned()));
@@ -47,7 +47,7 @@ impl ExtensionValue {
     /// # Example
     ///
     /// ```
-    /// use cloudevents::v02::ExtensionValue;
+    /// use cloudevents::v10::ExtensionValue;
     /// use serde_json::Value;
     /// use std::error::Error;
     ///
@@ -91,7 +91,7 @@ impl Data {
     /// # Example
     ///
     /// ```
-    /// use cloudevents::v02::Data;
+    /// use cloudevents::v10::Data;
     ///
     /// let value = Data::from_string("value");
     /// assert_eq!(value, Data::StringOrBinary("value".to_owned()));
@@ -111,7 +111,7 @@ impl Data {
     /// # Example
     ///
     /// ```
-    /// use cloudevents::v02::Data;
+    /// use cloudevents::v10::Data;
     ///
     /// let value = Data::from_binary(b"value");
     /// assert_eq!(value, Data::StringOrBinary("dmFsdWU=".to_owned()));
@@ -131,7 +131,7 @@ impl Data {
     /// # Example
     ///
     /// ```
-    /// use cloudevents::v02::Data;
+    /// use cloudevents::v10::Data;
     /// use serde_json::Value;
     /// use std::error::Error;
     ///
@@ -165,10 +165,13 @@ pub struct CloudEvent {
     time: Option<DateTime<FixedOffset>>,
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    schemaurl: Option<String>,
+    subject: Option<String>,
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    contenttype: Option<String>,
+    dataschema: Option<String>,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    datacontenttype: Option<String>,
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     data: Option<Data>,
@@ -198,9 +201,19 @@ impl CloudEvent {
         self.time.as_ref()
     }
 
-    /// Get the schemaurl
-    pub fn schema_url(&self) -> Option<&str> {
-        self.schemaurl.as_ref().map(|x| x.as_ref())
+    /// Get the subject
+    pub fn subject(&self) -> Option<&str> {
+        self.subject.as_ref().map(|x| x.as_ref())
+    }
+
+    /// Get the dataschema
+    pub fn dataschema(&self) -> Option<&str> {
+        self.dataschema.as_ref().map(|x| x.as_ref())
+    }
+
+    /// Get the datacontenttype
+    pub fn datacontenttype(&self) -> Option<&str> {
+        self.datacontenttype.as_ref().map(|x| x.as_ref())
     }
 
     /// Get the data
@@ -217,14 +230,14 @@ impl CloudEvent {
 /// Create a new [`CloudEvent`].
 ///
 /// # Example
-/// use cloudevents::v02::CloudEvent;
+/// use cloudevents::v10::CloudEvent;
 /// use std::error::Error;
 ///
 /// let event : Result<CloudEvent, Error> = CloudEventBuilder::default()
 ///     .event_id("id")
 ///     .source("http://www.google.com")
 ///     .event_type("test type")
-///     .contenttype(Some("application/json")
+///     .datacontenttype(Some("application/json")
 ///     .build();
 ///
 /// [`CloudEvent`]: struct.CloudEvent.html
@@ -234,8 +247,9 @@ pub struct CloudEventBuilder {
     source: Option<String>,
     id: Option<String>,
     time: Option<String>,
-    schemaurl: Option<String>,
-    contenttype: Option<String>,
+    subject: Option<String>,
+    dataschema: Option<String>,
+    datacontenttype: Option<String>,
     data: Option<Data>,
     extensions: Option<HashMap<String, ExtensionValue>>,
 }
@@ -265,15 +279,21 @@ impl CloudEventBuilder {
         self
     }
 
-    /// Set the schemaurl.
-    pub fn schemaurl<S: Into<String>>(mut self, s: S) -> Self {
-        self.schemaurl = Some(s.into());
+    /// Set the subject.
+    pub fn subject<S: Into<String>>(mut self, s: S) -> Self {
+        self.subject = Some(s.into());
         self
     }
 
-    /// Set the content type.
-    pub fn contenttype<S: Into<String>>(mut self, s: S) -> Self {
-        self.contenttype = Some(s.into());
+    /// Set the dataschema.
+    pub fn dataschema<S: Into<String>>(mut self, s: S) -> Self {
+        self.dataschema = Some(s.into());
+        self
+    }
+
+    /// Set the datacontenttype.
+    pub fn datacontenttype<S: Into<String>>(mut self, s: S) -> Self {
+        self.datacontenttype = Some(s.into());
         self
     }
 
@@ -321,21 +341,20 @@ impl CloudEventBuilder {
                     None
                 }
             },
-            contenttype: self.contenttype,
-            data: self.data,
-            extensions: self.extensions,
-            schemaurl: {
-                if let Some(x) = self.schemaurl {
-                    let schemaurl = x;
-                    match Url::parse(&schemaurl) {
-                        Ok(_) | Err(ParseError::RelativeUrlWithoutBase) => Some(schemaurl),
+            subject: self.subject,
+            dataschema: {
+                match self.dataschema {
+                    Some(dataschema) => match Url::parse(&dataschema) {
+                        Ok(_) | Err(ParseError::RelativeUrlWithoutBase) => Some(dataschema),
                         Err(e) => return Err(format_err!("{}", e)),
-                    }
-                } else {
-                    None
+                    },
+                    None => None,
                 }
             },
-            specversion: "0.2",
+            datacontenttype: self.datacontenttype,
+            data: self.data,
+            extensions: self.extensions,
+            specversion: "1.0",
         })
     }
 }
@@ -344,13 +363,14 @@ impl Default for CloudEventBuilder {
     fn default() -> Self {
         CloudEventBuilder {
             event_type: None,
-            id: None,
-            schemaurl: None,
             source: None,
-            extensions: None,
-            data: None,
-            contenttype: None,
+            id: None,
             time: None,
+            subject: None,
+            dataschema: None,
+            datacontenttype: None,
+            data: None,
+            extensions: None,
         }
     }
 }
@@ -365,15 +385,15 @@ impl Default for CloudEventBuilder {
 /// # Example
 ///
 /// ```
-/// use cloudevents::cloudevent_v02;
+/// use cloudevents::cloudevent_v10;
 /// use std::error::Error;
 ///
 /// fn main() -> Result<(), Box<Error>> {
-///     let cloudevent = cloudevent_v02!(
+///     let cloudevent = cloudevent_v10!(
 ///         event_type: "com.example.object.delete.v2",
 ///         source: "https://github.com/cloudevents/spec/pull/123",
 ///         event_id: "0e72b6bd-1341-46b5-9907-efde752682c4",
-///         contenttype: "application/json"
+///         datacontenttype: "application/json"
 ///     )?;
 ///     Ok(())
 /// }
@@ -381,9 +401,9 @@ impl Default for CloudEventBuilder {
 /// ```
 /// [ `CloudEvent`]: struct.CloudEvent.html
 #[macro_export]
-macro_rules! cloudevent_v02 {
+macro_rules! cloudevent_v10 {
     ($( $name:ident: $value:expr $(,)* )+) => {
-        $crate::v02::CloudEventBuilder::default()
+        $crate::v10::CloudEventBuilder::default()
             $(
                 .$name($value)
             )*
@@ -459,28 +479,28 @@ mod test {
             .event_id("id")
             .source("http://www.google.com")
             .event_type("test type")
-            .contenttype("application/json")
+            .datacontenttype("application/json")
             .build()
             .unwrap();
 
         assert_eq!(event.event_type, "test type");
         assert_eq!(event.source, "http://www.google.com");
         assert_eq!(event.id, "id");
-        assert_eq!(event.specversion, "0.2");
+        assert_eq!(event.specversion, "1.0");
         assert_eq!(event.extensions, None);
         assert_eq!(event.data, None);
         assert_eq!(event.time, None);
-        assert_eq!(event.contenttype, Some("application/json".to_owned()));
-        assert_eq!(event.schemaurl, None);
+        assert_eq!(event.datacontenttype, Some("application/json".to_owned()));
+        assert_eq!(event.dataschema, None);
     }
 
     #[test]
     fn builder_macro_works() {
-        let event = cloudevent_v02!(
+        let event = cloudevent_v10!(
             event_type: "test type",
             source: "http://www.google.com",
             event_id: "id",
-            contenttype: "application/json",
+            datacontenttype: "application/json",
             data: Data::from_string("test"),
         )
         .unwrap();
@@ -488,12 +508,12 @@ mod test {
         assert_eq!(event.event_type, "test type");
         assert_eq!(event.source, "http://www.google.com");
         assert_eq!(event.id, "id");
-        assert_eq!(event.specversion, "0.2");
+        assert_eq!(event.specversion, "1.0");
         assert_eq!(event.extensions, None);
         assert_eq!(event.data, Some(Data::StringOrBinary("test".to_owned())));
         assert_eq!(event.time, None);
-        assert_eq!(event.contenttype, Some("application/json".to_owned()));
-        assert_eq!(event.schemaurl, None);
+        assert_eq!(event.datacontenttype, Some("application/json".to_owned()));
+        assert_eq!(event.dataschema, None);
     }
 
     #[test]
