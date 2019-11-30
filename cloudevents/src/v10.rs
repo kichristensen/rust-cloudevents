@@ -390,7 +390,7 @@ impl Default for CloudEventBuilder {
 /// #[macro_use]
 /// use cloudevents::cloudevent_v10;
 /// use cloudevents::v10::Data;
-/// 
+///
 /// let event = cloudevent_v10!(
 ///   event_type: "test type",
 ///   source: "http://www.google.com",
@@ -399,14 +399,14 @@ impl Default for CloudEventBuilder {
 ///   data: Data::from_string("\"test\""),
 /// ).unwrap();
 /// ```
-/// 
+///
 /// ## Date now
-/// 
+///
 /// ```
 /// #[macro_use]
 /// use cloudevents::cloudevent_v10;
 /// use cloudevents::v10::Data;
-/// 
+///
 /// let event = cloudevent_v10!(
 ///   event_type: "test type",
 ///   source: "http://www.google.com",
@@ -416,7 +416,7 @@ impl Default for CloudEventBuilder {
 ///   data: Data::from_string("\"test\""),
 /// ).unwrap();
 /// ```
-/// 
+///
 /// [ `CloudEvent`]: struct.CloudEvent.html
 #[macro_export]
 macro_rules! cloudevent_v10 {

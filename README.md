@@ -1,19 +1,21 @@
-# CloudEvents
+# cloudevents 0.1.1
 
 Implementation of the core in version
+
 * v1.0: [v1.0 CloudEvents specification](https://github.com/cloudevents/spec/blob/v1.0/spec.md) and [v1.0 JSON Event Format](https://github.com/cloudevents/spec/blob/v1.0/json-format.md).
 * v0.2: [v0.2 CloudEvents specification](https://github.com/cloudevents/spec/blob/v0.2/spec.md) and [v0.2 JSON Event Format](https://github.com/cloudevents/spec/blob/v0.2/json-format.md).
 
 This library is meant to provide the base for other CloudEvent transport bindings and formats. It only implements the core specification and the JSON format.
-
 
 ## Usage v1.0
 
 A cloud event can be create in two different ways:
 
 ```rust
-use cloudevents::v10::{CloudEventBuilder,Data};
-use std::error::Error;
+#[macro_use]
+use cloudevents::cloudevent_v10;
+use cloudevents::v10::{CloudEventBuilder, CloudEvent, Data};
+use failure::Error;
 
 // Using the builder
 let event : Result<CloudEvent, Error> = CloudEventBuilder::default()
@@ -24,19 +26,19 @@ let event : Result<CloudEvent, Error> = CloudEventBuilder::default()
   .build();
 
 // or using the macro
-let event : Result<CloudEvent, Error> = cloudevent!(
+let event : Result<CloudEvent, Error> = cloudevent_v10!(
     event_type: "test type",
     source: "http://www.google.com",
     event_id: "id",
     datacontenttype: "application/json",
     data: Data::from_string("\"test\""),
-)
-```
+);
 
-To serialize the event as JSON, just use `serde_json`:
+// To serialize the event as JSON, just use `serde_json`:
 
-```rust
-let json = serde_json::to_string(&event)?;
+use serde_json;
+let json = serde_json::to_string(&event.unwrap()).unwrap();
+assert_eq!(json, "{\"type\":\"test type\",\"specversion\":\"1.0\",\"source\":\"http://www.google.com\",\"id\":\"id\",\"datacontenttype\":\"application/json\",\"data\":\"\\\"test\\\"\"}");
 ```
 
 ## Usage v0.2
@@ -44,8 +46,10 @@ let json = serde_json::to_string(&event)?;
 A cloud event can be create in two different ways:
 
 ```rust
-use cloudevents::v02::{CloudEventBuilder,Data};
-use std::error::Error;
+#[macro_use]
+use cloudevents::cloudevent_v02;
+use cloudevents::v02::{CloudEventBuilder, CloudEvent, Data};
+use failure::Error;
 
 // Using the builder
 let event : Result<CloudEvent, Error> = CloudEventBuilder::default()
@@ -56,19 +60,19 @@ let event : Result<CloudEvent, Error> = CloudEventBuilder::default()
   .build();
 
 // or using the macro
-let event : Result<CloudEvent, Error> = cloudevent!(
+let event : Result<CloudEvent, Error> = cloudevent_v02!(
     event_type: "test type",
     source: "http://www.google.com",
     event_id: "id",
     contenttype: "application/json",
     data: Data::from_string("\"test\""),
-)
-```
+);
 
-To serialize the event as JSON, just use `serde_json`:
+// To serialize the event as JSON, just use `serde_json`:
 
-```rust
-let json = serde_json::to_string(&event)?;
+use serde_json;
+let json = serde_json::to_string(&event.unwrap()).unwrap();
+assert_eq!(json, "{\"type\":\"test type\",\"specversion\":\"0.2\",\"source\":\"http://www.google.com\",\"id\":\"id\",\"contenttype\":\"application/json\",\"data\":\"\\\"test\\\"\"}");
 ```
 
 ## License
@@ -87,3 +91,10 @@ at your option.
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
+
+## Update Readme
+
+The original readme text is an rust doc comment in the [lib.rs](./cloudevents/src/lib.rs) file
+
+1. cargo install cargo-readme
+2. cargo readme  -r cloudevents > README.md
