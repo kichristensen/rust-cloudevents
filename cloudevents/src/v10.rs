@@ -7,7 +7,7 @@ use serde_json::Value;
 use std::collections::HashMap;
 use url::{ParseError, Url};
 
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(untagged)]
 /// Possible extension values
 pub enum ExtensionValue {
@@ -68,7 +68,7 @@ impl ExtensionValue {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(untagged)]
 /// Possible data values
 pub enum Data {
@@ -153,7 +153,7 @@ impl Data {
 }
 
 /// Cloud event definition
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct CloudEvent {
     #[serde(rename = "type")]
     event_type: String,
