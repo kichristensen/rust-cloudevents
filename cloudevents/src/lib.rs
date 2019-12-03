@@ -12,8 +12,8 @@ A cloud event can be create in two different ways:
 
 ```
 #[macro_use]
-use cloudevents::cloudevent_v10;
-use cloudevents::v10::{CloudEventBuilder, CloudEvent, Data};
+use cloudevents::{cloudevent_v1_0, Data};
+use cloudevents::v1_0::{CloudEventBuilder, CloudEvent};
 use failure::Error;
 
 // Using the builder
@@ -25,7 +25,7 @@ let event : Result<CloudEvent, Error> = CloudEventBuilder::default()
   .build();
 
 // or using the macro
-let event : Result<CloudEvent, Error> = cloudevent_v10!(
+let event : Result<CloudEvent, Error> = cloudevent_v1_0!(
     event_type: "test type",
     source: "http://www.google.com",
     event_id: "id",
@@ -46,8 +46,8 @@ A cloud event can be create in two different ways:
 
 ```
 #[macro_use]
-use cloudevents::cloudevent_v02;
-use cloudevents::v02::{CloudEventBuilder, CloudEvent, Data};
+use cloudevents::{cloudevent_v02, Data};
+use cloudevents::v02::{CloudEventBuilder, CloudEvent};
 use failure::Error;
 
 // Using the builder
@@ -92,5 +92,8 @@ for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
 */
 
+mod common;
 pub mod v02;
-pub mod v10;
+pub mod v1_0;
+
+pub use crate::common::{Data, ExtensionValue};

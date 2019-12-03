@@ -13,8 +13,8 @@ A cloud event can be create in two different ways:
 
 ```rust
 #[macro_use]
-use cloudevents::cloudevent_v10;
-use cloudevents::v10::{CloudEventBuilder, CloudEvent, Data};
+use cloudevents::{cloudevent_v1_0,Data};
+use cloudevents::v10::{CloudEventBuilder, CloudEvent};
 use failure::Error;
 
 // Using the builder
@@ -26,7 +26,7 @@ let event : Result<CloudEvent, Error> = CloudEventBuilder::default()
   .build();
 
 // or using the macro
-let event : Result<CloudEvent, Error> = cloudevent_v10!(
+let event : Result<CloudEvent, Error> = cloudevent_v1_0!(
     event_type: "test type",
     source: "http://www.google.com",
     event_id: "id",
