@@ -1,8 +1,7 @@
-use super::CloudEventBuilder;
-use crate::cloudevent_v1_0;
-#[cfg(test)]
-use crate::{Data, ExtensionValue};
-use serde_derive::{Deserialize, Serialize};
+use cloudevents::cloudevent_v1_0;
+use cloudevents::v1_0::CloudEventV1_0Builder;
+use cloudevents::{Data, ExtensionValue};
+use serde_derive::Serialize;
 use serde_json::json;
 
 #[test]
@@ -64,7 +63,7 @@ fn extension_object_data_can_be_created_from_serializable() {
 
 #[test]
 fn builder_works() {
-    let event = CloudEventBuilder::default()
+    let event = CloudEventV1_0Builder::default()
         .event_id("id")
         .source("http://www.google.com")
         .event_type("test type")
@@ -105,7 +104,7 @@ fn builder_macro_works() {
 
 #[test]
 fn source_is_allowed_to_be_a_relative_uri() {
-    let event = CloudEventBuilder::default()
+    let event = CloudEventV1_0Builder::default()
         .event_id("id")
         .source("/cloudevents/spec/pull/123")
         .event_type("test type")
@@ -117,7 +116,7 @@ fn source_is_allowed_to_be_a_relative_uri() {
 
 #[test]
 fn source_is_allowed_to_be_a_urn() {
-    let event = CloudEventBuilder::default()
+    let event = CloudEventV1_0Builder::default()
         .event_id("id")
         .source("urn:event:from:myapi/resourse/123")
         .event_type("test type")
@@ -129,7 +128,7 @@ fn source_is_allowed_to_be_a_urn() {
 
 #[test]
 fn source_is_allowed_to_be_a_mailto() {
-    let event = CloudEventBuilder::default()
+    let event = CloudEventV1_0Builder::default()
         .event_id("id")
         .source("mailto:cncf-wg-serverless@lists.cncf.io")
         .event_type("test type")

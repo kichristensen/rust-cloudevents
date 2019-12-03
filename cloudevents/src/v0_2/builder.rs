@@ -1,7 +1,7 @@
-use super::CloudEventV1_0;
+use super::CloudEventV0_2;
 use crate::Data;
 use crate::ExtensionValue;
-use chrono::prelude::{DateTime, FixedOffset, Local};
+use chrono::prelude::DateTime;
 use failure::{format_err, Error};
 use std::collections::HashMap;
 use url::{ParseError, Url};
@@ -9,33 +9,30 @@ use url::{ParseError, Url};
 /// Create a new [`CloudEvent`] according to spec version 0.2.
 ///
 /// # Example
-/// ```
-/// use cloudevents::v1_0::{CloudEventV1_0,CloudEventV1_0Builder};
-/// use failure::Error;
+/// use cloudevents::v02::CloudEvent;
+/// use std::error::Error;
 ///
-/// let event : Result<CloudEventV1_0, Error> = CloudEventV1_0Builder::default()
+/// let event : Result<CloudEvent, Error> = CloudEventV0_2Builder::default()
 ///     .event_id("id")
 ///     .source("http://www.google.com")
 ///     .event_type("test type")
-///     .datacontenttype("application/json")
+///     .contenttype(Some("application/json")
 ///     .build();
-/// ```
 ///
-/// [`CloudEvent`]: struct.CloudEventV1_0.html
+/// [`CloudEvent`]: struct.CloudEventV0_2.html
 #[derive(Debug)]
-pub struct CloudEventV1_0Builder {
+pub struct CloudEventV0_2Builder {
     event_type: Option<String>,
     source: Option<String>,
     id: Option<String>,
     time: Option<String>,
-    subject: Option<String>,
-    dataschema: Option<String>,
-    datacontenttype: Option<String>,
+    schemaurl: Option<String>,
+    contenttype: Option<String>,
     data: Option<Data>,
     extensions: Option<HashMap<String, ExtensionValue>>,
 }
 
-impl CloudEventV1_0Builder {
+impl CloudEventV0_2Builder {
     /// Set the event type.
     pub fn event_type<S: Into<String>>(mut self, s: S) -> Self {
         self.event_type = Some(s.into());
@@ -60,21 +57,15 @@ impl CloudEventV1_0Builder {
         self
     }
 
-    /// Set the subject.
-    pub fn subject<S: Into<String>>(mut self, s: S) -> Self {
-        self.subject = Some(s.into());
+    /// Set the schemaurl.
+    pub fn schemaurl<S: Into<String>>(mut self, s: S) -> Self {
+        self.schemaurl = Some(s.into());
         self
     }
 
-    /// Set the dataschema.
-    pub fn dataschema<S: Into<String>>(mut self, s: S) -> Self {
-        self.dataschema = Some(s.into());
-        self
-    }
-
-    /// Set the datacontenttype.
-    pub fn datacontenttype<S: Into<String>>(mut self, s: S) -> Self {
-        self.datacontenttype = Some(s.into());
+    /// Set the content type.
+    pub fn contenttype<S: Into<String>>(mut self, s: S) -> Self {
+        self.contenttype = Some(s.into());
         self
     }
 
@@ -98,8 +89,8 @@ impl CloudEventV1_0Builder {
     /// or if one of the validated fields (time, source and schemeurl) are populated with an invalid value.
     ///
     /// [`CloudEvent`]: struct.CloudEvent.html
-    pub fn build(self) -> Result<CloudEventV1_0, Error> {
-        Ok(CloudEventV1_0::new(
+    pub fn build(self) -> Result<CloudEventV0_2, Error> {
+        Ok(CloudEventV0_2::new(
             self.event_type
                 .ok_or(format_err!("Event type is required"))?,
             {
@@ -115,41 +106,41 @@ impl CloudEventV1_0Builder {
             },
             self.id.ok_or(format_err!("Event id is required"))?,
             {
-                match self.time.as_ref() {
-                    Some(t) if t == "now" => Some(DateTime::<FixedOffset>::from(Local::now())),
-                    Some(t) => Some(DateTime::parse_from_rfc3339(&t)?),
-                    None => None,
+                if let Some(t) = self.time {
+                    Some(DateTime::parse_from_rfc3339(&t)?)
+                } else {
+                    None
                 }
             },
-            self.subject,
             {
-                match self.dataschema {
-                    Some(dataschema) => match Url::parse(&dataschema) {
-                        Ok(_) | Err(ParseError::RelativeUrlWithoutBase) => Some(dataschema),
+                if let Some(x) = self.schemaurl {
+                    let schemaurl = x;
+                    match Url::parse(&schemaurl) {
+                        Ok(_) | Err(ParseError::RelativeUrlWithoutBase) => Some(schemaurl),
                         Err(e) => return Err(format_err!("{}", e)),
-                    },
-                    None => None,
+                    }
+                } else {
+                    None
                 }
             },
-            self.datacontenttype,
+            self.contenttype,
             self.data,
             self.extensions,
         ))
     }
 }
 
-impl Default for CloudEventV1_0Builder {
+impl Default for CloudEventV0_2Builder {
     fn default() -> Self {
-        CloudEventV1_0Builder {
+        CloudEventV0_2Builder {
             event_type: None,
-            source: None,
             id: None,
-            time: None,
-            subject: None,
-            dataschema: None,
-            datacontenttype: None,
-            data: None,
+            schemaurl: None,
+            source: None,
             extensions: None,
+            data: None,
+            contenttype: None,
+            time: None,
         }
     }
 }

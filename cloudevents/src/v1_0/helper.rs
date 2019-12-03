@@ -1,4 +1,4 @@
-/// Construct a [`CloudEvent`].
+/// Construct a [`CloudEvent`] according to spec version 1.0.
 ///
 /// # Errors
 ///
@@ -37,11 +37,11 @@
 /// ).unwrap();
 /// ```
 ///
-/// [ `CloudEvent`]: struct.CloudEvent.html
+/// [`CloudEvent`]: struct.CloudEventV1_0.html
 #[macro_export]
 macro_rules! cloudevent_v1_0 {
     ($( $name:ident: $value:expr $(,)* )+) => {
-        $crate::v1_0::CloudEventBuilder::default()
+        $crate::v1_0::CloudEventV1_0Builder::default()
             $(
                 .$name($value)
             )*
