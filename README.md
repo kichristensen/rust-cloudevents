@@ -1,4 +1,4 @@
-# cloudevents 0.1.1
+# cloudevents 0.2.0
 
 Implementation of the core in version:
 

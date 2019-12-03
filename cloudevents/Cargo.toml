@@ -1,11 +1,14 @@
 [package]
 name = "cloudevents"
-version = "0.1.1"
-authors = ["Kim Christensen <kimworking@gmail.com>"]
+version = "0.2.0"
+authors = [
+    "Kim Christensen <kimworking@gmail.com>",
+    "Linus Basig <linus@basig.me>",
+    "Fabrizio Lazzaretti <fabrizio@lazzaretti.me>"
+]
 description = "Implementation of the CloudEvents specification"
 license = "MIT/Apache-2.0"
 edition = "2018"
-readme = "README.md"
 keywords = ["cloudevents"]
 repository = "https://github.com/kichristensen/rust-cloudevents"
 
