@@ -13,14 +13,10 @@ keywords = ["cloudevents"]
 repository = "https://github.com/kichristensen/rust-cloudevents"
 
 [dependencies]
-serde_json = "1.0.37"
-serde = "1.0.85"
-serde_derive = "1.0.85"
-chrono = { version = "0.4.6", features = ["serde"] }
-failure = "0.1.5"
-url = "1.7.2"
-base64 = "0.10.0"
-
-[features]
-default = ["v02"]
-v02 = []
+serde_json = "1.0.42"
+serde = "1.0.103"
+serde_derive = "1.0.103"
+chrono = { version = "0.4.10", features = ["serde"] }
+failure = "0.1.6"
+url = "2.1.0"
+base64 = "0.11.0"
