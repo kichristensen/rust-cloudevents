@@ -6,35 +6,19 @@ Implementation of the core in version:
 
 This library is meant to provide the base for other CloudEvent transport bindings and formats. It only implements the core specification and the JSON format.
 
-# Usage v1.0
+# Create CloudEvent according to latest spec (1.0)
 
 A cloud event can be create in two different ways:
-
-## Using the builder
-
-```
-use cloudevents::{Data, CloudEventBuilder};
-use cloudevents::v1_0::CloudEventV1_0;
-use failure::Error;
-
-let event : Result<CloudEventV1_0, Error> = CloudEventBuilder::default() // or CloudEventBuilder::v1_0()
-  .event_id("id")
-  .source("http://www.google.com")
-  .event_type("test type")
-  .datacontenttype("application/json")
-  .data(Data::from_string("\"test\""))
-  .build();
-```
 
 ## Using the macro
 
 ```
-use cloudevents::cloudevent_v1_0;
+use cloudevents::cloudevent;
 use cloudevents::{Data, CloudEventBuilder};
-use cloudevents::v1_0::CloudEventV1_0;
+use cloudevents::CloudEvent;
 use failure::Error;
 
-let event : Result<CloudEventV1_0, Error> = cloudevent_v1_0!(
+let event: Result<CloudEvent, Error> = cloudevent!(
     event_type: "test type",
     source: "http://www.google.com",
     event_id: "id",
@@ -43,6 +27,24 @@ let event : Result<CloudEventV1_0, Error> = cloudevent_v1_0!(
 );
 ```
 
+## Using the builder
+
+```
+use cloudevents::{Data, CloudEventBuilder};
+use cloudevents::CloudEvent;
+use failure::Error;
+
+let event: CloudEvent = CloudEvent::V1_0(
+  CloudEventBuilder::default()
+    .event_id("id")
+    .source("http://www.google.com")
+    .event_type("test type")
+    .datacontenttype("application/json")
+    .data(Data::from_string("\"test\""))
+    .build()
+    .unwrap()
+);
+```
 
 # Usage with spec version 0.2
 
@@ -89,10 +91,10 @@ The CloudEvents can be serialized/deserialized with `serde_json`
 
 ```
 use serde_json;
-use cloudevents::cloudevent_v1_0;
+use cloudevents::cloudevent;
 use cloudevents::Data;
 
-let event = cloudevent_v1_0!(
+let event = cloudevent!(
   event_type: "test type",
   source: "http://www.google.com",
   event_id: "id",
