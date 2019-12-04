@@ -6,43 +6,48 @@ Implementation of the core in version:
 
 This library is meant to provide the base for other CloudEvent transport bindings and formats. It only implements the core specification and the JSON format.
 
-# Usage v1.0
+# Create CloudEvent according to latest spec (1.0)
 
 A cloud event can be create in two different ways:
-
-## Using the builder
-
-```
-use cloudevents::{Data, CloudEventBuilder};
-use cloudevents::v1_0::CloudEventV1_0;
-use failure::Error;
-
-let event : Result<CloudEventV1_0, Error> = CloudEventBuilder::default() // or CloudEventBuilder::v1_0()
-  .event_id("id")
-  .source("http://www.google.com")
-  .event_type("test type")
-  .datacontenttype("application/json")
-  .data(Data::from_string("\"test\""))
-  .build();
-```
 
 ## Using the macro
 
 ```
-use cloudevents::cloudevent_v1_0;
+use cloudevents::cloudevent;
 use cloudevents::{Data, CloudEventBuilder};
-use cloudevents::v1_0::CloudEventV1_0;
+use cloudevents::CloudEvent;
 use failure::Error;
 
-let event : Result<CloudEventV1_0, Error> = cloudevent_v1_0!(
+let event: Result<CloudEvent, Error> = cloudevent!(
     event_type: "test type",
     source: "http://www.google.com",
     event_id: "id",
+    time: "2019-12-04T18:33:09+00:00",
+    subject: "me",
+    dataschema: "https://lol.org/schema.json"
     datacontenttype: "application/json",
     data: Data::from_string("\"test\""),
 );
 ```
 
+## Using the builder
+
+```
+use cloudevents::{Data, CloudEventBuilder};
+use cloudevents::CloudEvent;
+use failure::Error;
+
+let event: CloudEvent = CloudEvent::V1_0(
+  CloudEventBuilder::default()
+    .event_id("id")
+    .source("http://www.google.com")
+    .event_type("test type")
+    .datacontenttype("application/json")
+    .data(Data::from_string("\"test\""))
+    .build()
+    .unwrap()
+);
+```
 
 # Usage with spec version 0.2
 
@@ -81,14 +86,18 @@ let event : Result<CloudEventV0_2, Error> = cloudevent_v0_2!(
 );
 ```
 
-# To serialize the event as JSON, just use `serde_json`
+# JSON encoding
+
+The CloudEvents can be serialized/deserialized with `serde_json`
+
+## Serialization
 
 ```
 use serde_json;
-use cloudevents::cloudevent_v1_0;
+use cloudevents::cloudevent;
 use cloudevents::Data;
 
-let event = cloudevent_v1_0!(
+let event = cloudevent!(
   event_type: "test type",
   source: "http://www.google.com",
   event_id: "id",
@@ -98,6 +107,30 @@ let event = cloudevent_v1_0!(
 
 let json = serde_json::to_string(&event.unwrap()).unwrap();
 assert_eq!(json, "{\"type\":\"test type\",\"specversion\":\"1.0\",\"source\":\"http://www.google.com\",\"id\":\"id\",\"datacontenttype\":\"application/json\",\"data\":\"\\\"test\\\"\"}");
+```
+
+## Deserialization
+
+```
+use serde_json;
+use cloudevents::cloudevent_v1_0;
+use cloudevents::{Data, CloudEvent};
+
+let data = "{\"type\":\"test type\",\"specversion\":\"1.0\",\"source\":\"http://www.google.com\",\"id\":\"id\",\"datacontenttype\":\"application/json\",\"data\":\"\\\"test\\\"\"}";
+let expected_event = cloudevent_v1_0!(
+  event_type: "test type",
+  source: "http://www.google.com",
+  event_id: "id",
+  datacontenttype: "application/json",
+  data: Data::from_string("\"test\""),
+).unwrap();
+
+let event: CloudEvent = serde_json::from_str(data).unwrap();
+
+match event {
+  CloudEvent::V1_0(event) => assert_eq!(event, expected_event),
+  _ => assert!(false)
+}
 ```
 
 # License

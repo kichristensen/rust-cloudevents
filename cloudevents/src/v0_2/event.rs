@@ -9,7 +9,7 @@ use std::collections::HashMap;
 pub struct CloudEventV0_2 {
     #[serde(rename = "type")]
     event_type: String,
-    specversion: &'static str,
+    specversion: String,
     source: String,
     id: String,
     #[serde(default)]
@@ -42,7 +42,7 @@ impl CloudEventV0_2 {
     ) -> Self {
         CloudEventV0_2 {
             event_type,
-            specversion: "0.2",
+            specversion: String::from("0.2"),
             source,
             id,
             time,
