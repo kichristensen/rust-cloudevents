@@ -120,9 +120,11 @@ let expected_event = cloudevent_v1_0!(
   data: Data::from_string("\"test\""),
 ).unwrap();
 
-match serde_json::from_str(data).unwrap() {
+let event: CloudEvent = serde_json::from_str(data).unwrap();
+
+match event {
   CloudEvent::V1_0(event) => assert_eq!(event, expected_event),
-  _ => {}
+  _ => assert!(false)
 }
 ```
 
