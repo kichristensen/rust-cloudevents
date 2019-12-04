@@ -22,6 +22,9 @@ let event: Result<CloudEvent, Error> = cloudevent!(
     event_type: "test type",
     source: "http://www.google.com",
     event_id: "id",
+    time: "2019-12-04T18:33:09+00:00",
+    subject: "me",
+    dataschema: "https://lol.org/schema.json"
     datacontenttype: "application/json",
     data: Data::from_string("\"test\""),
 );
