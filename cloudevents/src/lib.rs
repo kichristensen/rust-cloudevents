@@ -6,7 +6,7 @@ Implementation of the core in version:
 
 This library is meant to provide the base for other CloudEvent transport bindings and formats. It only implements the core specification and the JSON format.
 
-# Create CloudEvent according to latest spec (1.0)
+# Create CloudEvent according to latest spec
 
 A cloud event can be create in two different ways:
 
@@ -34,57 +34,19 @@ let event: Result<CloudEvent, Error> = cloudevent!(
 
 ```
 use cloudevents::{Data, CloudEventBuilder};
-use cloudevents::CloudEvent;
+use cloudevents::CloudEventLatest;
 use failure::Error;
 
-let event: CloudEvent = CloudEvent::V1_0(
-  CloudEventBuilder::default()
+let event: Result<CloudEventLatest, Error> = CloudEventBuilder::latest()
     .event_id("id")
     .source("http://www.google.com")
     .event_type("test type")
     .datacontenttype("application/json")
     .data(Data::from_string("\"test\""))
-    .build()
-    .unwrap()
-);
+    .build();
 ```
 
-# Usage with spec version 0.2
-
-A cloud event can be create in two different ways:
-
-## Using the builder
-
-```
-use cloudevents::{Data, CloudEventBuilder};
-use cloudevents::v0_2::CloudEventV0_2;
-use failure::Error;
-
-let event : Result<CloudEventV0_2, Error> = CloudEventBuilder::v0_2()
-  .event_id("id")
-  .source("http://www.google.com")
-  .event_type("test type")
-  .contenttype("application/json")
-  .data(Data::from_string("\"test\""))
-  .build();
-```
-
-## Using the macro
-
-```
-use cloudevents::cloudevent_v0_2;
-use cloudevents::{Data, CloudEventBuilder};
-use cloudevents::v0_2::CloudEventV0_2;
-use failure::Error;
-
-let event : Result<CloudEventV0_2, Error> = cloudevent_v0_2!(
-    event_type: "test type",
-    source: "http://www.google.com",
-    event_id: "id",
-    contenttype: "application/json",
-    data: Data::from_string("\"test\""),
-);
-```
+Check out the module documentation to learn about version specific macros and builders.
 
 # JSON encoding
 
@@ -154,10 +116,15 @@ dual licensed as above, without any additional terms or conditions.
 mod builder;
 mod common;
 mod event;
-pub mod helper;
+mod helper;
 pub mod v0_2;
 pub mod v1_0;
 
 pub use crate::builder::CloudEventBuilder;
 pub use crate::common::{Data, ExtensionValue};
 pub use crate::event::CloudEvent;
+
+use crate::v1_0::{CloudEventV1_0, CloudEventV1_0Builder};
+
+pub type CloudEventLatest = CloudEventV1_0;
+pub type CloudEventLatestBuilder = CloudEventV1_0Builder;

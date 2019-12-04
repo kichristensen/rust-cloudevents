@@ -1,7 +1,6 @@
 use crate::v0_2::CloudEventV0_2Builder;
 use crate::v1_0::CloudEventV1_0Builder;
-
-type DefaultCloudEventBuilder = CloudEventV1_0Builder;
+use crate::CloudEventLatestBuilder;
 
 /// Create a new `CloudEvent` in the desired spec version.
 ///
@@ -21,8 +20,8 @@ pub struct CloudEventBuilder;
 
 impl CloudEventBuilder {
     /// Create a new `CloudEvent` in the current spec version
-    pub fn default() -> DefaultCloudEventBuilder {
-        DefaultCloudEventBuilder::default()
+    pub fn latest() -> CloudEventLatestBuilder {
+        CloudEventLatestBuilder::default()
     }
     /// Create a new `CloudEvent` according to spec version 0.2
     pub fn v0_2() -> CloudEventV0_2Builder {
