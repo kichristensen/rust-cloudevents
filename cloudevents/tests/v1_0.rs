@@ -137,3 +137,17 @@ fn source_is_allowed_to_be_a_mailto() {
 
     assert_eq!(event.source(), "mailto:cncf-wg-serverless@lists.cncf.io");
 }
+
+#[test]
+fn serialize() {
+    let event = cloudevent_v1_0!(
+        event_type: "test type",
+        source: "http://www.google.com",
+        event_id: "id",
+        datacontenttype: "application/json",
+        data: Data::from_string("\"test\""),
+    );
+
+    let json = serde_json::to_string(&event.unwrap()).unwrap();
+    assert_eq!(json, "{\"type\":\"test type\",\"specversion\":\"1.0\",\"source\":\"http://www.google.com\",\"id\":\"id\",\"datacontenttype\":\"application/json\",\"data\":\"\\\"test\\\"\"}");
+}
