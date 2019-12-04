@@ -9,15 +9,18 @@ use url::{ParseError, Url};
 /// Create a new [`CloudEvent`] according to spec version 0.2.
 ///
 /// # Example
-/// use cloudevents::v02::CloudEvent;
-/// use std::error::Error;
+/// 
+/// ```
+/// use cloudevents::v0_2::{CloudEventV0_2, CloudEventV0_2Builder};
+/// use failure::Error;
 ///
-/// let event : Result<CloudEvent, Error> = CloudEventV0_2Builder::default()
+/// let event : Result<CloudEventV0_2, Error> = CloudEventV0_2Builder::default()
 ///     .event_id("id")
 ///     .source("http://www.google.com")
 ///     .event_type("test type")
-///     .contenttype(Some("application/json")
+///     .contenttype("application/json")
 ///     .build();
+/// ```
 ///
 /// [`CloudEvent`]: struct.CloudEventV0_2.html
 #[derive(Debug)]
