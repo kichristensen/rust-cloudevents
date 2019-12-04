@@ -121,6 +121,7 @@ dual licensed as above, without any additional terms or conditions.
 mod builder;
 mod common;
 mod event;
+pub mod helper;
 pub mod v0_2;
 pub mod v1_0;
 
