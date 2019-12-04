@@ -60,9 +60,7 @@ macro_rules! get_event_field {
 #[macro_export]
 macro_rules! cloudevent {
     ($( $name:ident: $value:expr $(,)* )+) => {
-        match $crate::cloudevent_v1_0!($($name: $value,)*) {
-            Ok(event) => Ok($crate::CloudEvent::V1_0(event)),
-            Err(error) => Err(error)
-        }
+        $crate::cloudevent_v1_0!($($name: $value,)*)
+            .and_then(|event| Ok($crate::CloudEvent::V1_0(event)))
     };
 }
