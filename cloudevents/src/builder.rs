@@ -6,7 +6,7 @@ type DefaultCloudEventBuilder = CloudEventV1_0Builder;
 /// Create a new `CloudEvent` in the desired spec version.
 ///
 /// # Example
-/// 
+///
 /// ```
 /// use cloudevents::CloudEventBuilder;
 ///

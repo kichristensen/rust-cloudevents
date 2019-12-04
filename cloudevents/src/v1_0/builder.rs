@@ -9,7 +9,7 @@ use url::{ParseError, Url};
 /// Create a new [`CloudEvent`] according to spec version 0.2.
 ///
 /// # Example
-/// 
+///
 /// ```
 /// use cloudevents::v1_0::{CloudEventV1_0,CloudEventV1_0Builder};
 /// use failure::Error;
