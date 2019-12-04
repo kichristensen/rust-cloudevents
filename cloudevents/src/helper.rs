@@ -32,3 +32,37 @@ macro_rules! get_event_field {
         }
     };
 }
+
+/// Construct a [`CloudEvent`] according to the latest spec version
+///
+/// # Errors
+///
+/// If some of the required fields are missing, or if some of the fields
+/// have invalid content an error is returned.
+///
+/// # Example
+///
+/// ```
+/// #[macro_use]
+/// use cloudevents::cloudevent;
+/// use cloudevents::{Data, CloudEvent};
+///
+/// let event: CloudEvent = cloudevent!(
+///   event_type: "test type",
+///   source: "http://www.google.com",
+///   event_id: "id",
+///   datacontenttype: "application/json",
+///   data: Data::from_string("\"test\""),
+/// ).unwrap();
+/// ```
+///
+/// [`CloudEvent`]: struct.CloudEvent.html
+#[macro_export]
+macro_rules! cloudevent {
+    ($( $name:ident: $value:expr $(,)* )+) => {
+        match $crate::cloudevent_v1_0!($($name: $value,)*) {
+            Ok(event) => Ok($crate::CloudEvent::V1_0(event)),
+            Err(error) => Err(error)
+        }
+    };
+}

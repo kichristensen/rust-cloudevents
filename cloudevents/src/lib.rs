@@ -81,7 +81,11 @@ let event : Result<CloudEventV0_2, Error> = cloudevent_v0_2!(
 );
 ```
 
-# To serialize the event as JSON, just use `serde_json`
+# JSON encoding
+
+The CloudEvents can be serialized/deserialized with `serde_json`
+
+## Serialization
 
 ```
 use serde_json;
@@ -98,6 +102,28 @@ let event = cloudevent_v1_0!(
 
 let json = serde_json::to_string(&event.unwrap()).unwrap();
 assert_eq!(json, "{\"type\":\"test type\",\"specversion\":\"1.0\",\"source\":\"http://www.google.com\",\"id\":\"id\",\"datacontenttype\":\"application/json\",\"data\":\"\\\"test\\\"\"}");
+```
+
+## Deserialization
+
+```
+use serde_json;
+use cloudevents::cloudevent_v1_0;
+use cloudevents::{Data, CloudEvent};
+
+let data = "{\"type\":\"test type\",\"specversion\":\"1.0\",\"source\":\"http://www.google.com\",\"id\":\"id\",\"datacontenttype\":\"application/json\",\"data\":\"\\\"test\\\"\"}";
+let expected_event = cloudevent_v1_0!(
+  event_type: "test type",
+  source: "http://www.google.com",
+  event_id: "id",
+  datacontenttype: "application/json",
+  data: Data::from_string("\"test\""),
+).unwrap();
+
+match serde_json::from_str(data).unwrap() {
+  CloudEvent::V1_0(event) => assert_eq!(event, expected_event),
+  _ => {}
+}
 ```
 
 # License
